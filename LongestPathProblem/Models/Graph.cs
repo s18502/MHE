@@ -7,6 +7,7 @@ namespace LongestPathProblem.Models
     public record Graph
     {
         public HashSet<Vertex> Vertices { get; init; } = new();
+        private Dictionary<int, Vertex> _verticiesById => Vertices.ToDictionary(x => x.Id, x => x);
 
         public GraphPath GetRandomPath()
         {
@@ -33,6 +34,27 @@ namespace LongestPathProblem.Models
             return ToGraphPath(visitedVertices);
         }
 
+        public bool IsPathValid(GraphPath path)
+        {
+            var verticesQueue = new Queue<Vertex>(
+                path.Vertices.Select(x=>_verticiesById[x]));
+
+            if (verticesQueue.Count == 0)
+                return true;
+            
+            var currentVertex = verticesQueue.Dequeue();
+            
+            while (verticesQueue.TryDequeue(out var nextVertex))
+            {
+                if (!currentVertex.Neighbours.Contains(nextVertex))
+                    return false;
+
+                currentVertex = nextVertex;
+            }
+
+            return true;
+        }
+        
         private static GraphPath ToGraphPath(List<Vertex> visitedVertices)
         {
             return new GraphPath

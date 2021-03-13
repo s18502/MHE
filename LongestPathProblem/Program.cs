@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using LongestPathProblem.Models;
 
 namespace LongestPathProblem
 {
@@ -25,7 +26,11 @@ namespace LongestPathProblem
 
             var randomPath = graph.GetRandomPath();
             Console.WriteLine($"Losowa sciezka: {randomPath}");
+            Console.WriteLine($"Czy losowa sciezka jest poprawna? {graph.IsPathValid(randomPath)}");
             Console.WriteLine($"Ocena losowej sciezki: {Heuristic.Goal(randomPath)}");
+
+            var incorrectPath = new GraphPath {Vertices = new List<int>(new[] {0, 1, 2})};
+            Console.WriteLine($"Przyklad niepoprawnej sciezki: {graph.IsPathValid(incorrectPath)}");
             
             Console.WriteLine(graph.Vertices.Count);
         }
