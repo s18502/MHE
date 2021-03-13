@@ -5,9 +5,14 @@ namespace LongestPathProblem.Models
 {
     public record GraphPath
     {
-        public List<Vertex> Vertices { get; init; }
+        public List<int> Vertices { get; init; } = new();
 
         public int Length => Vertices.Count;
+
+        public override string ToString()
+        {
+            return $"[{string.Join(",", Vertices)}]";
+        }
 
         public virtual bool Equals(GraphPath other)
         {

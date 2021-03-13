@@ -4,8 +4,13 @@ Musimy znaleźć jak najdłuższą ścieżkę w grafie, przy czym każdy wierzch
 
 Link: https://en.wikipedia.org/wiki/Longest_path_problem
 
+### Uzycie
+```
+LongestPathProblem.exe [NAZWA_PLIKU]
+```
+
 ### Format danych wejściowych
-Lista sąsiedztwa podana na wejśćie standardowe, gdzie pierwszą cyfrą jest numer wierzchołka a kolejne cyfry oddzielone spacją określają wierzchołki z którymi jest on połączony. 
+Lista sąsiedztwa, gdzie pierwszą cyfrą jest numer wierzchołka a kolejne cyfry oddzielone spacją określają wierzchołki z którymi jest on połączony. 
 
 Przykład
 ```
