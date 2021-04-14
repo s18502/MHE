@@ -1,34 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace LongestPathProblem.Models
 {
     public record Graph
     {
         public HashSet<Vertex> Vertices { get; init; } = new();
-        private Dictionary<int, Vertex> _verticiesById => Vertices.ToDictionary(x => x.Id, x => x);
+        private Dictionary<int, Vertex> _verticiesById => 
+            Vertices.ToDictionary(x => x.Id, x => x);
 
         public GraphPath GetRandomPath()
         {
             var random = new Random();
             var currentVertex = Vertices.OrderBy(_ => random.Next()).First();
 
-            var visitedVertices = new List<Vertex>(new[] {currentVertex});
+            var visitedVertices = new List<int>(new[] {currentVertex.Id});
 
             while (currentVertex.Neighbours.Any())
             {
-                var nextVertex = currentVertex.Neighbours
+                var randomNeigbours = currentVertex.Neighbours
                     .Except(visitedVertices)
-                    .OrderBy(_ => random.Next())
-                    .FirstOrDefault();
+                    .OrderBy(_ => random.Next());
 
-                if (nextVertex == default)
+                if (!randomNeigbours.Any())
                     return ToGraphPath(visitedVertices);
-                
-                visitedVertices.Add(nextVertex);
 
-                currentVertex = nextVertex;
+                var nextVertexId = randomNeigbours.First();
+                visitedVertices.Add(nextVertexId);
+
+                currentVertex = _verticiesById[nextVertexId];
             }
 
             return ToGraphPath(visitedVertices);
@@ -36,6 +38,14 @@ namespace LongestPathProblem.Models
 
         public bool IsPathValid(GraphPath path)
         {
+            if (path.Vertices.Count < 2)
+                //Nie jest sciezka
+                return false;
+            
+            if (path.Vertices.GroupBy(x => x).Any(x => x.Count() > 1))
+                // ma powtarzajace sie wierzcholki
+                return false;
+            
             var verticesQueue = new Queue<Vertex>(
                 path.Vertices.Select(x=>_verticiesById[x]));
 
@@ -46,7 +56,7 @@ namespace LongestPathProblem.Models
             
             while (verticesQueue.TryDequeue(out var nextVertex))
             {
-                if (!currentVertex.Neighbours.Contains(nextVertex))
+                if (!currentVertex.Neighbours.Contains(nextVertex.Id))
                     return false;
 
                 currentVertex = nextVertex;
@@ -54,12 +64,34 @@ namespace LongestPathProblem.Models
 
             return true;
         }
-        
-        private static GraphPath ToGraphPath(List<Vertex> visitedVertices)
+
+        public GraphPath NextDeterministicPath(GraphPath path)
         {
-            return new GraphPath
+            var radix = Vertices.Count;
+
+            var maxPath = Enumerable.Range(1, Vertices.Count)
+                .Reverse()
+                .ToDecimalArbitrarySystem(radix);
+            
+            var pathAsNumber = path.Vertices.ToDecimalArbitrarySystem(radix);
+            var nextPathAsNumber = (pathAsNumber + 1) % maxPath;
+
+            while (true)
             {
-                Vertices = visitedVertices.Select(x=>x.Id).ToList()
+                var nextPathVertices = nextPathAsNumber.ToArbitrarySystem(radix).ToList();
+                var nextPath = new GraphPath {Vertices = nextPathVertices};
+                if (IsPathValid(nextPath))
+                    return nextPath;
+                
+                nextPathAsNumber = (nextPathAsNumber + 1) % maxPath;
+            }
+        }
+
+        private static GraphPath ToGraphPath(List<int> visitedVertices)
+        {
+            return new()
+            {
+                Vertices = visitedVertices.ToList()
             };
         }
 

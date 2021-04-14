@@ -28,11 +28,19 @@ namespace LongestPathProblem
             Console.WriteLine($"Losowa sciezka: {randomPath}");
             Console.WriteLine($"Czy losowa sciezka jest poprawna? {graph.IsPathValid(randomPath)}");
             Console.WriteLine($"Ocena losowej sciezki: {Heuristic.Goal(randomPath)}");
-
+            
             var incorrectPath = new GraphPath {Vertices = new List<int>(new[] {0, 1, 2})};
             Console.WriteLine($"Przyklad niepoprawnej sciezki: {graph.IsPathValid(incorrectPath)}");
             
             Console.WriteLine(graph.Vertices.Count);
+            
+            Console.WriteLine("Deterministyczne kolejne sciezki");
+            var nextPath = randomPath;
+            for (var i = 0; i < 100; i++)
+            {
+               nextPath = graph.NextDeterministicPath(nextPath);
+               Console.WriteLine(nextPath);
+            }
         }
     }
 }

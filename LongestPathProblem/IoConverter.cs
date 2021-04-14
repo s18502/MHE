@@ -8,7 +8,7 @@ namespace LongestPathProblem
     {
         public static Graph GraphFromLines(IEnumerable<string> inputLines)
         {
-            var verticesAndNeighbours =
+            var vertices =
                 inputLines
                     .Select(x => x.Split(' '))
                     .Select(x =>
@@ -17,31 +17,16 @@ namespace LongestPathProblem
                         var vertexId = int.Parse(vertexIdStr);
 
                         var neighbours = x.Skip(1).Select(int.Parse);
-                        
-                        return (VertexId: vertexId, Neihbours: neighbours);
-                    })
-                    .ToDictionary(x => x.VertexId, x => x.Neihbours);
 
-            var vertices = verticesAndNeighbours.Keys.Select(v => new Vertex
-            {
-                Id = v
-            }).ToDictionary(x=>x.Id, x=>x);
-         
-            foreach (var vertex in verticesAndNeighbours)
-            {
-                var (vertexId, vertexNeighbours) = vertex;
-                var neighbours = vertexNeighbours.Select(x => vertices[x]);
-                var currentVertex = vertices[vertexId];
-                
-                foreach (var neighbour in neighbours)
-                {
-                    currentVertex.Neighbours.Add(neighbour);
-                }
-            }
-
+                        return new Vertex
+                        {
+                            Id = vertexId,
+                            Neighbours = neighbours.ToList()
+                        };
+                    });
             return new Graph
             {
-                Vertices = new HashSet<Vertex>(vertices.Values)
+                Vertices = new HashSet<Vertex>(vertices)
             };
         }
 

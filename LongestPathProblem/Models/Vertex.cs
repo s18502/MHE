@@ -5,6 +5,6 @@ namespace LongestPathProblem.Models
     public record Vertex
     {
         public int Id { get; init; }
-        public HashSet<Vertex> Neighbours { get; init; } = new();
+        public List<int> Neighbours { get; init; } = new();
     }
 }
