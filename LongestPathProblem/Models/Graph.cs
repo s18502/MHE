@@ -85,7 +85,41 @@ namespace LongestPathProblem.Models
                 
                 nextPathAsNumber = (nextPathAsNumber + 1) % maxPath;
             }
-        }
+        }   
+        public GraphPath RandomModifyPath(GraphPath path, int maxModifyVertices = 1)
+        {
+            var vertices = path.Vertices.Select(vId => _verticiesById[vId]).ToList();
+            var verticesReversed = new List<Vertex>(vertices);
+            verticesReversed.Reverse();
+            
+            var startingVertex = verticesReversed
+                .Skip(maxModifyVertices + 1)
+                .First();
+
+            var startingVertexIdx = vertices.IndexOf(startingVertex);
+
+            var newPath = path.Vertices.Take(startingVertexIdx + 1).ToList();
+            var currentVertex = startingVertex;
+            var r = new Random();
+
+            while (currentVertex.Neighbours.Any())
+            {
+                var possibleNeighbours = currentVertex.Neighbours
+                    .Except(newPath)
+                    .OrderBy(_ => r.Next());
+
+                if (possibleNeighbours.Any() == false)
+                {
+                    return new GraphPath {Vertices = newPath};
+                }
+
+                var randomNeighbour = possibleNeighbours.First();
+                newPath.Add(randomNeighbour);
+                currentVertex = _verticiesById[randomNeighbour];
+            }
+
+            return new GraphPath {Vertices = newPath};
+        }   
 
         private static GraphPath ToGraphPath(List<int> visitedVertices)
         {
