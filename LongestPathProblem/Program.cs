@@ -35,7 +35,7 @@ namespace LongestPathProblem
             Console.WriteLine(graph.Vertices.Count);
             
             Console.WriteLine("Deterministyczne kolejne sciezki");
-            var nextPath = randomPath;
+            var nextPath = new GraphPath() { Vertices = new List<int>(new []{0,3})};
             for (var i = 0; i < 100; i++)
             {
                nextPath = graph.NextDeterministicPath(nextPath);
@@ -49,7 +49,7 @@ namespace LongestPathProblem
                 var randomModifiedPath = graph.RandomModifyPath(pathToBeRandomlyModified, 1);
                 Console.WriteLine(randomModifiedPath);
             }
-
+            
             Console.WriteLine("Losowo modyfikowana sciezka, stopien 2");
             for (var i = 0; i < 10; i++)
             {
@@ -63,6 +63,14 @@ namespace LongestPathProblem
                 var randomModifiedPath = graph.RandomModifyPath(pathToBeRandomlyModified, 3);
                 Console.WriteLine(randomModifiedPath);
             }
+            
+            Console.WriteLine("Pelny przeglad");
+            foreach (var graphPath in graph.AllPaths())
+            {
+                Console.WriteLine(graphPath);
+            }
+
+            Console.WriteLine(graph.AllPaths().Count());
         }
     }
 }

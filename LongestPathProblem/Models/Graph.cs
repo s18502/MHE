@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace LongestPathProblem.Models
@@ -67,23 +69,31 @@ namespace LongestPathProblem.Models
 
         public GraphPath NextDeterministicPath(GraphPath path)
         {
-            var radix = Vertices.Count;
+            var radix = Vertices.Count + 1;
 
             var maxPath = Enumerable.Range(1, Vertices.Count)
                 .Reverse()
                 .ToDecimalArbitrarySystem(radix);
             
-            var pathAsNumber = path.Vertices.ToDecimalArbitrarySystem(radix);
+            var pathAsNumber = path.Vertices.Select(v => v + 1).ToDecimalArbitrarySystem(radix);
             var nextPathAsNumber = (pathAsNumber + 1) % maxPath;
 
             while (true)
             {
-                var nextPathVertices = nextPathAsNumber.ToArbitrarySystem(radix).ToList();
+                var nextPathVertices = nextPathAsNumber
+                    .ToArbitrarySystem(radix)
+                    .ToList();
+
+                nextPathAsNumber = (nextPathAsNumber + 1) % maxPath;
+                
+                if (nextPathVertices.Contains(0))
+                    continue;
+
+                nextPathVertices = nextPathVertices.Select(x => x - 1).ToList();
+                
                 var nextPath = new GraphPath {Vertices = nextPathVertices};
                 if (IsPathValid(nextPath))
                     return nextPath;
-                
-                nextPathAsNumber = (nextPathAsNumber + 1) % maxPath;
             }
         }   
         public GraphPath RandomModifyPath(GraphPath path, int maxModifyVertices = 1)
@@ -119,7 +129,32 @@ namespace LongestPathProblem.Models
             }
 
             return new GraphPath {Vertices = newPath};
-        }   
+        }
+
+        public IEnumerable<GraphPath> AllPaths()
+        {
+            var radix = Vertices.Count + 1;
+
+            var maxPath = Enumerable.Range(1, Vertices.Count)
+                .Reverse()
+                .ToDecimalArbitrarySystem(radix);
+
+            for (BigInteger pathAsNumber = 1 ; pathAsNumber <= maxPath; pathAsNumber++)
+            {
+                var pathVertices = pathAsNumber
+                    .ToArbitrarySystem(radix).ToList();
+                    
+                if(pathVertices.Contains(0)) continue;
+                    
+                pathVertices = pathVertices
+                    .Select(x=> x - 1)
+                    .ToList();
+                
+                var nextPath = new GraphPath {Vertices = pathVertices};
+                if (IsPathValid(nextPath))
+                    yield return nextPath;
+            }
+        }
 
         private static GraphPath ToGraphPath(List<int> visitedVertices)
         {
