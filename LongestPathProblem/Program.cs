@@ -65,11 +65,11 @@ namespace LongestPathProblem
                 Console.WriteLine(randomModifiedPath);
             }
             
-            Console.WriteLine("Pelny przeglad");
-            foreach (var graphPath in graph.AllPaths())
-            {
-                Console.WriteLine(graphPath);
-            }
+            // Console.WriteLine("Pelny przeglad");
+            // foreach (var graphPath in graph.AllPaths())
+            // {
+            //     Console.WriteLine(graphPath);
+            // }
 
             // Console.WriteLine(graph.AllPaths().Count());
 

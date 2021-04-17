@@ -102,15 +102,12 @@ namespace LongestPathProblem.Models
             {
                 var nextPathVertices = nextPathAsNumber
                     .ToArbitrarySystem(radix)
+                    .Select(x => x - 1)
                     .ToArray();
 
                 nextPathAsNumber = (nextPathAsNumber + 1) % maxPath;
                 
                 if (nextPathVertices.Contains(0))
-                    continue;
-
-                nextPathVertices = nextPathVertices.Select(x => x - 1).ToArray();
-                if(nextPathVertices.Any(x=>!_verticiesById.ContainsKey(x)))
                     continue;
                 
                 var nextPath = new GraphPath(nextPathVertices);
