@@ -18,7 +18,7 @@ namespace LongestPathProblem
                 result.Clear();
 
                 if (decimalNumber == 0)
-                    return new[] { 0};
+                    return new[] { 0 };
 
                 while (decimalNumber != 0)
                 {

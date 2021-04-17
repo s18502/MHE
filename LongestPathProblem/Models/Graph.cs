@@ -53,7 +53,7 @@ namespace LongestPathProblem.Models
 
             try
             {
-                if (path.Vertices.Count < 2)
+                if (path.Vertices.Length < 2)
                     //Nie jest sciezka
                     return false;
 
@@ -69,8 +69,8 @@ namespace LongestPathProblem.Models
 
                 while (verticesQueue.TryDequeue(out var nextVertexId))
                 {
-                    var currentVertex = _verticiesById[currentVertexId];
-                    if (!currentVertex.Neighbours.Contains(nextVertexId))
+                    if (!_verticiesById.TryGetValue(currentVertexId, out var currentVertex) 
+                        || !currentVertex.Neighbours.Contains(nextVertexId))
                         return false;
 
                     currentVertexId = nextVertexId;
@@ -99,18 +99,18 @@ namespace LongestPathProblem.Models
             {
                 var nextPathVertices = nextPathAsNumber
                     .ToArbitrarySystem(radix)
-                    .ToList();
+                    .ToArray();
 
                 nextPathAsNumber = (nextPathAsNumber + 1) % maxPath;
                 
                 if (nextPathVertices.Contains(0))
                     continue;
 
-                nextPathVertices = nextPathVertices.Select(x => x - 1).ToList();
+                nextPathVertices = nextPathVertices.Select(x => x - 1).ToArray();
                 if(nextPathVertices.Any(x=>!_verticiesById.ContainsKey(x)))
                     continue;
                 
-                var nextPath = new GraphPath {Vertices = nextPathVertices};
+                var nextPath = new GraphPath(nextPathVertices);
                 if (IsPathValid(nextPath))
                     return nextPath;
             }
@@ -121,7 +121,7 @@ namespace LongestPathProblem.Models
             var verticesReversed = new List<Vertex>(vertices);
             verticesReversed.Reverse();
 
-            var partialPaths = Enumerable.Range(0, path.Vertices.Count)
+            var partialPaths = Enumerable.Range(0, path.Vertices.Length)
                 .Select(x => path.Vertices.Take(x).ToList())
                 .ToList();
             
@@ -151,9 +151,9 @@ namespace LongestPathProblem.Models
                     .Except(newPath)
                     .OrderBy(_ => r.Next());
 
-                if ((r.Next() % (path.Length * 2) == 0 && newPath.Count > 1) || possibleNeighbours.Any() == false)
+                if ((r.Next() % (path.Length * 2) == 0 && newPath.Count() > 1) || possibleNeighbours.Any() == false)
                 {
-                    return new GraphPath {Vertices = newPath};
+                    return new GraphPath(newPath.ToArray());
                 }
 
                 var randomNeighbour = possibleNeighbours.First();
@@ -161,7 +161,7 @@ namespace LongestPathProblem.Models
                 currentVertex = _verticiesById[randomNeighbour];
             }
 
-            return new GraphPath {Vertices = newPath};
+            return new GraphPath(newPath.ToArray());
         }
 
         public IEnumerable<GraphPath> AllPaths()
@@ -175,14 +175,11 @@ namespace LongestPathProblem.Models
             for (BigInteger pathAsNumber = 1 ; pathAsNumber <= maxPath; pathAsNumber++)
             {
                 var pathVertices = pathAsNumber
-                    .ToArbitrarySystem(radix);
-                    
-                pathVertices = pathVertices.Select(x=> x - 1);
+                    .ToArbitrarySystem(radix)
+                    .Select(x=> x - 1)
+                    .ToArray();
 
-                if(pathVertices.Any(x=>!_verticiesById.ContainsKey(x)))
-                    continue;
-                
-                var nextPath = new GraphPath {Vertices = pathVertices.ToList()};
+                var nextPath = new GraphPath(pathVertices);
                 if (IsPathValid(nextPath))
                     yield return nextPath;
             }
@@ -190,10 +187,7 @@ namespace LongestPathProblem.Models
 
         private static GraphPath ToGraphPath(List<int> visitedVertices)
         {
-            return new()
-            {
-                Vertices = visitedVertices.ToList()
-            };
+            return new(visitedVertices.ToArray());
         }
 
         public virtual bool Equals(Graph other)

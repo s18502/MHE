@@ -34,10 +34,7 @@ namespace LongestPathProblem
         {
             var verticies = input.Split(' ').Select(int.Parse);
 
-            return new GraphPath
-            {
-                Vertices = verticies.ToList()
-            };
+            return new GraphPath(verticies.ToArray());
         }
 
         public static void LogToFile(this IEnumerable<HeuristicLog> log, string fileName)

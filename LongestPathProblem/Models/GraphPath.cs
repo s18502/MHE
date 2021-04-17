@@ -3,21 +3,24 @@ using System.Linq;
 
 namespace LongestPathProblem.Models
 {
-    public record GraphPath
+    public struct GraphPath
     {
-        public List<int> Vertices { get; init; } = new();
+        public GraphPath(int[] vertices)
+        {
+            Vertices = vertices;
+        }
 
-        public int Length => Vertices.Count;
+        public int[] Vertices { get; private set; }
+
+        public int Length => Vertices.Length;
 
         public override string ToString()
         {
             return $"[{string.Join(",", Vertices)}]";
         }
 
-        public virtual bool Equals(GraphPath other)
+        public bool Equals(GraphPath other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
             return Vertices.SequenceEqual(other.Vertices);
         }
 
