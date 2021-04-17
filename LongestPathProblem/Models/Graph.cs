@@ -57,6 +57,9 @@ namespace LongestPathProblem.Models
                     //Nie jest sciezka
                     return false;
 
+                if (path.Vertices.Distinct().Count() != path.Vertices.Count())
+                    return false;
+                
                 foreach (var vertex in path.Vertices)
                 {
                     verticesQueue.Enqueue(vertex);

@@ -66,12 +66,12 @@ namespace LongestPathProblem
             }
             
             Console.WriteLine("Pelny przeglad");
-            // foreach (var graphPath in graph.AllPaths())
-            // {
-            //     Console.WriteLine(graphPath);
-            // }
+            foreach (var graphPath in graph.AllPaths())
+            {
+                Console.WriteLine(graphPath);
+            }
 
-            Console.WriteLine(graph.AllPaths().Count());
+            // Console.WriteLine(graph.AllPaths().Count());
 
             var iterations = 10_000;
             Console.WriteLine("Algorytm wspinaczkowy, randomizowany, {0} iteracji", iterations);
