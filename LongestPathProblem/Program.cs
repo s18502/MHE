@@ -73,7 +73,7 @@ namespace LongestPathProblem
 
             // Console.WriteLine(graph.AllPaths().Count());
 
-            var iterations = 10_000;
+            var iterations = 100;
             Console.WriteLine("Algorytm wspinaczkowy, randomizowany, {0} iteracji", iterations);
             
             var randomizedHillClimbing = new HillClimbingRandomizedLongestPathGraphHeuristic(iterations); 
