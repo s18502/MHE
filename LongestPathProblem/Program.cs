@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using LongestPathProblem.Heuristics;
 using LongestPathProblem.Models;
 
 namespace LongestPathProblem
@@ -29,20 +30,20 @@ namespace LongestPathProblem
             Console.WriteLine($"Czy losowa sciezka jest poprawna? {graph.IsPathValid(randomPath)}");
             Console.WriteLine($"Ocena losowej sciezki: {Heuristic.Goal(randomPath)}");
             
-            var incorrectPath = new GraphPath {Vertices = new List<int>(new[] {0, 1, 2})};
+            var incorrectPath = new GraphPath {Vertices = new List<int>(new[] {1, 2})};
             Console.WriteLine($"Przyklad niepoprawnej sciezki: {graph.IsPathValid(incorrectPath)}");
             
             Console.WriteLine(graph.Vertices.Count);
             
             Console.WriteLine("Deterministyczne kolejne sciezki");
-            var nextPath = new GraphPath() { Vertices = new List<int>(new []{0,3})};
+            var nextPath = new GraphPath() { Vertices = new List<int>(new []{1,3})};
             for (var i = 0; i < 100; i++)
             {
-               nextPath = graph.NextDeterministicPath(nextPath);
+               nextPath = graph.GetNextDeterministicPath(nextPath);
                Console.WriteLine(nextPath);
             }
 
-            var pathToBeRandomlyModified = new GraphPath(){Vertices = new[] {1,0,2,3,4}.ToList()};
+            var pathToBeRandomlyModified = new GraphPath(){Vertices = new[] {1,3,4}.ToList()};
             Console.WriteLine("Losowo modyfikowana sciezka, stopien 1");
             for (var i = 0; i < 10; i++)
             {
@@ -64,13 +65,33 @@ namespace LongestPathProblem
                 Console.WriteLine(randomModifiedPath);
             }
             
-            Console.WriteLine("Pelny przeglad");
-            foreach (var graphPath in graph.AllPaths())
-            {
-                Console.WriteLine(graphPath);
-            }
+            // Console.WriteLine("Pelny przeglad");
+            // foreach (var graphPath in graph.AllPaths())
+            // {
+            //     Console.WriteLine(graphPath);
+            // }
 
-            Console.WriteLine(graph.AllPaths().Count());
+            // Console.WriteLine(graph.AllPaths().Count());
+
+            var iterations = 100;
+            Console.WriteLine("Algorytm wspinaczkowy, randomizowany, {0} iteracji", iterations);
+            
+            var randomizedHillClimbing = new HillClimbingRandomizedLongestPathGraphHeuristic(iterations); 
+            var randomizedHillClimbingSolution = randomizedHillClimbing.Solve(graph);
+            randomizedHillClimbingSolution.log.LogToFile("randomized_hill_climbing.csv");
+            
+            Console.WriteLine("Algorytm wspinaczkowy, randomizowany, {0} iteracji, wynik = {1} (cel: {2})", iterations, randomizedHillClimbingSolution, randomizedHillClimbingSolution.currentBest.Length);
+            
+            var deterministicHillClimbing = new HillClimbingDeterministicLongestPathGraphHeuristic(iterations);
+            var deterministicHillClimbingSolution = deterministicHillClimbing.Solve(graph);
+            deterministicHillClimbingSolution.log.LogToFile("deterministic_hill_climbing.csv");
+            Console.WriteLine("Algorytm wspinaczkowy, deterministyczny, {0} iteracji, wynik = {1} (cel: {2})", iterations, deterministicHillClimbingSolution, deterministicHillClimbingSolution.currentBest.Length);
+            
+            var simAnnealing = new SimAnnealingLongestPathHeuristic(iterations, k=> 1000.0 / k); 
+            var simAnnelingSolution = simAnnealing.Solve(graph);
+            simAnnelingSolution.log.LogToFile("sim_annealing.csv");
+            
+            Console.WriteLine("Algorytm wyzarzania, {0} iteracji, wynik = {1} (cel: {2})", iterations, simAnnelingSolution, simAnnelingSolution.currentBest.Length);
         }
     }
 }

@@ -1,25 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using LongestPathProblem.Helpers;
 
 namespace LongestPathProblem
 {
     public static class NumericHelpers
     {
+        private static readonly ObjectPool<Stack<int>> StackPool = new(() => new Stack<int>());
+        
         public static IEnumerable<int> ToArbitrarySystem(this BigInteger decimalNumber, int radix)
         {
-            var result = new Stack<int>();
-
-            if (decimalNumber == 0)
-                return new[] { 0};
-
-            while (decimalNumber != 0)
+            var result = StackPool.Get();
+            try
             {
-                var remainder = (int)(decimalNumber % radix);
-                result.Push(remainder);
-                decimalNumber = decimalNumber / radix;
-            }
+                result.Clear();
 
-            return result;
+                if (decimalNumber == 0)
+                    return new[] { 0};
+
+                while (decimalNumber != 0)
+                {
+                    var remainder = (int)(decimalNumber % radix);
+                    result.Push(remainder);
+                    decimalNumber /= radix;
+                }
+
+                return result.AsEnumerable();
+            }
+            finally
+            {
+                StackPool.Return(result);
+            }
         }
 
         public static BigInteger ToDecimalArbitrarySystem(this IEnumerable<int> number, int radix)

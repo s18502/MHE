@@ -21,7 +21,7 @@ Przykład
 4 1 3
 ```
 
-![przyklad](example-graph.png)
+![przyklad](example-graph-2.jpg)
 
 ### Format danych wyjściowych
 Najdłuższa ścieżka przez graf, podana jako numery wierzchołków oddzielone spacją

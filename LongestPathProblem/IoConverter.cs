@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using LongestPathProblem.Heuristics;
 using LongestPathProblem.Models;
 
 namespace LongestPathProblem
@@ -24,10 +27,7 @@ namespace LongestPathProblem
                             Neighbours = neighbours.ToList()
                         };
                     });
-            return new Graph
-            {
-                Vertices = new HashSet<Vertex>(vertices)
-            };
+            return new Graph(vertices);
         }
 
         public static GraphPath PathFromString(string input)
@@ -38,6 +38,21 @@ namespace LongestPathProblem
             {
                 Vertices = verticies.ToList()
             };
+        }
+
+        public static void LogToFile(this IEnumerable<HeuristicLog> log, string fileName)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Iteration;Goal");
+            
+            foreach (var logItem in log)
+            {
+                sb.AppendLine($"{logItem.Iteration};{logItem.Goal}");
+            }
+
+            sb.AppendLine();
+            
+            File.WriteAllText(fileName, sb.ToString());
         }
     }
 }
