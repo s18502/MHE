@@ -5,13 +5,13 @@ using LongestPathProblem.Models;
 
 namespace LongestPathProblem.Heuristics
 {
-    public class SimAnnealingLongestPathHeuristic : IGraphHeuristic
+    public class SimAnnealingLongestPathClimbingHeuristic : IGraphClimbingHeuristic
     {
         private readonly int _iterations;
         private readonly Func<int, double> _annealingFunc;
         private readonly Random _random = new Random();
 
-        public SimAnnealingLongestPathHeuristic(int iterations, Func<int, double> annealingFunc)
+        public SimAnnealingLongestPathClimbingHeuristic(int iterations, Func<int, double> annealingFunc)
         {
             _iterations = iterations;
             _annealingFunc = annealingFunc;

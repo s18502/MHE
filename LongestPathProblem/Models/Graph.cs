@@ -20,7 +20,12 @@ namespace LongestPathProblem.Models
             _verticiesById = Vertices.ToDictionary(x => x.Id, x => x); 
         }
 
-        public GraphPath GetRandomPath()
+        public IEnumerable<int> NeighboursOf(int vertexId)
+        {
+            return _verticiesById[vertexId].Neighbours;
+        }
+
+        public GraphPath GetRandomPath(bool favourHigherDegree = false)
         {
             var random = new Random();
             var currentVertex = Vertices.OrderBy(_ => random.Next()).First();
@@ -37,6 +42,28 @@ namespace LongestPathProblem.Models
                     return ToGraphPath(visitedVertices);
 
                 var nextVertexId = randomNeigbours.First();
+                if (favourHigherDegree)
+                {
+                    var vertexByDegree =
+                        randomNeigbours
+                            .Zip(randomNeigbours.Select(x => _verticiesById[x].Neighbours.Count))
+                            .OrderByDescending(x=>x.Second)
+                            .ToList();
+
+                    var degreeSum = vertexByDegree.Sum(x => x.Second);
+                    var randomNumber = random.Next(0, degreeSum);
+
+                    foreach (var tpl in vertexByDegree)
+                    {
+                        var (vertexId, degree) = tpl;
+                        randomNumber -= degree;
+
+                        nextVertexId = vertexId;
+                        if (randomNumber < 0)
+                            break;
+                    }
+                }
+                
                 visitedVertices.Add(nextVertexId);
 
                 currentVertex = _verticiesById[nextVertexId];
@@ -87,7 +114,7 @@ namespace LongestPathProblem.Models
             }
         }
 
-        public GraphPath GetNextDeterministicPath(GraphPath path)
+        public GraphPath GetNextDeterministicPath(GraphPath path, double randomness = 1)
         {
             var radix = Vertices.Count + 1;
 
@@ -111,7 +138,7 @@ namespace LongestPathProblem.Models
                     continue;
                 
                 var nextPath = new GraphPath(nextPathVertices);
-                if (IsPathValid(nextPath))
+                if (IsPathValid(nextPath) && new Random().NextDouble() < randomness)
                     return nextPath;
             }
         }   

@@ -3,13 +3,15 @@ using LongestPathProblem.Models;
 
 namespace LongestPathProblem.Heuristics
 {
-    public class HillClimbingDeterministicLongestPathGraphHeuristic : IGraphHeuristic
+    public class HillClimbingRandomizedLongestPathGraphClimbingHeuristic : IGraphClimbingHeuristic
     {
         private readonly int _iterations;
+        private double _randomness;
 
-        public HillClimbingDeterministicLongestPathGraphHeuristic(int iterations)
+        public HillClimbingRandomizedLongestPathGraphClimbingHeuristic(int iterations, double randomness = 0.5)
         {
             _iterations = iterations;
+            _randomness = randomness;
         }
         
         public (IEnumerable<HeuristicLog> log, GraphPath currentBest) Solve(Graph graph)
@@ -21,7 +23,7 @@ namespace LongestPathProblem.Heuristics
 
             for (var i = 0; i < _iterations; i++)
             {
-                var newSolution = graph.GetNextDeterministicPath(currentBest);
+                var newSolution = graph.GetNextDeterministicPath(currentBest, _randomness);
                 var newSolutionGoal = Heuristic.Goal(newSolution);
                 
                 if (newSolutionGoal > currentGoal)

@@ -3,7 +3,7 @@ using LongestPathProblem.Models;
 
 namespace LongestPathProblem.Heuristics
 {
-    public interface IGraphHeuristic
+    public interface IGraphClimbingHeuristic
     {
         (IEnumerable<HeuristicLog> log, GraphPath currentBest) Solve(Graph graph);
     }
