@@ -39,6 +39,7 @@ namespace LongestPathProblem
                 1,
                 0.2,
                 0.05,
+                CalculateFitnessFunctions.SequentialAndParallelCompare,
                 GeneticSelectionAlgorithms.Roulette,
                 CrossoverPairingAlgorithms.SingleEdgeDistance,
                 GeneticCrossoverAlgorithms.SingleEdgeCrossover,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using LongestPathProblem.Models;
 
@@ -14,6 +15,27 @@ namespace LongestPathProblem.Heuristics.Genetic
         }
     }
 
+    public static class CalculateFitnessFunctions
+    {
+        public static IEnumerable<int> SequentialAndParallelCompare(IEnumerable<GraphPath> population)
+        {
+            var populationList = population.ToList();
+
+            var sw = Stopwatch.StartNew();
+            var fitnessParallel = populationList.AsParallel().Select(Heuristic.Goal).ToList();
+            sw.Stop();
+            Console.WriteLine($"Równoległe obliczanie fitness: {sw.ElapsedTicks} ticks");
+            
+            sw.Reset();
+            sw.Start();
+            var fitnessSequential = populationList.Select(Heuristic.Goal).ToList();
+            sw.Stop();
+            Console.WriteLine($"Sekwencyjne obliczanie fitness: {sw.ElapsedTicks} ticks");
+
+            return fitnessParallel;
+        }
+    }
+    
     public static class CrossoverPairingAlgorithms
     {
         public static IEnumerable<(GraphPath, GraphPath)> SingleEdgeDistance(Graph g, IReadOnlyCollection<GraphPath> graphPaths)
@@ -133,6 +155,7 @@ namespace LongestPathProblem.Heuristics.Genetic
         private readonly double _crossoverProbability;
         private readonly double _mutationProbability;
         private readonly double _elite;
+        private readonly CalculateFitness _calculateFitness;
 
         private readonly SelectionAlgorithm _selectionAlgorithm;
         private readonly CrossOverPairingAlgorithm _crossOverPairingAlgorithm;
@@ -145,6 +168,7 @@ namespace LongestPathProblem.Heuristics.Genetic
         public delegate IEnumerable<GraphPath> CrossOverAlgorithm(Graph g, GraphPath parent1, GraphPath parent2);
 
         public delegate GraphPath MutationAlgorithm(Graph g, GraphPath genome);
+        public delegate IEnumerable<int> CalculateFitness(IEnumerable<GraphPath> population);
 
         public delegate IEnumerable<(GraphPath, GraphPath)>
             CrossOverPairingAlgorithm(Graph g ,IReadOnlyCollection<GraphPath> population);
@@ -157,6 +181,7 @@ namespace LongestPathProblem.Heuristics.Genetic
             double crossoverProbability,
             double mutationProbability,
             double elite,
+            CalculateFitness calculateFitness,
             SelectionAlgorithm selectionAlgorithm,
             CrossOverPairingAlgorithm crossOverPairingAlgorithm,
             CrossOverAlgorithm crossOverAlgorithm,
@@ -169,6 +194,7 @@ namespace LongestPathProblem.Heuristics.Genetic
             _crossoverProbability = crossoverProbability;
             _mutationProbability = mutationProbability;
             _elite = elite;
+            _calculateFitness = calculateFitness;
             _selectionAlgorithm = selectionAlgorithm;
             _crossOverPairingAlgorithm = crossOverPairingAlgorithm;
             _crossOverAlgorithm = crossOverAlgorithm;
@@ -185,7 +211,7 @@ namespace LongestPathProblem.Heuristics.Genetic
 
             for (var currentGeneration = 0; currentGeneration < _generations; currentGeneration++)
             {
-                var populationFitness = population.Select(Heuristic.Goal);
+                var populationFitness = _calculateFitness(population);
                 var populationWithFitness = population.Zip(populationFitness).ToList();
                 var parentPopulation = _selectionAlgorithm(g, populationWithFitness).ToList();
 
