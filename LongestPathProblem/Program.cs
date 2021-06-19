@@ -33,9 +33,17 @@ namespace LongestPathProblem
             // HillClimbing(iterations, graph);
             // SimAnneling(iterations, graph);
 
-            var genetic = new GeneticProgramHeuristic(
-                100,
-                30,
+            // RunGa(graph);
+
+            var islandsModel = new GeneticIslandsLoop(100, 16, 30);
+            var sol = islandsModel.Solve(graph);
+            Console.WriteLine(sol);
+            Console.WriteLine(Heuristic.Goal(sol));
+        }
+
+        private static void RunGa(Graph graph)
+        {
+            var geneticProgramIteration = new GeneticProgramIterator(
                 1,
                 0.2,
                 0.05,
@@ -47,7 +55,13 @@ namespace LongestPathProblem
                 Console.WriteLine
             );
 
-            var sol = genetic.Solve(graph);
+            var geneticProgramLoop = new GeneticProgramLoop(
+                100,
+                30,
+                geneticProgramIteration
+            );
+
+            var sol = geneticProgramLoop.Solve(graph);
             Console.WriteLine(sol);
             Console.WriteLine(Heuristic.Goal(sol));
         }

@@ -12,7 +12,7 @@ namespace LongestPathProblem.Models
 
         public int[] Vertices { get; private set; }
 
-        public int Length => Vertices.Length;
+        public int Length => Vertices?.Length ?? 0;
 
         public override string ToString()
         {
